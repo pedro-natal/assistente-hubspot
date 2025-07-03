@@ -10,7 +10,8 @@ load_dotenv()
 
 class N8nChatbot:
     def __init__(self):
-        self.webhook_url = os.getenv("N8N_WEBHOOK_URL")
+        # Tenta primeiro st.secrets (para Streamlit Cloud), depois os.getenv (para desenvolvimento local)
+        self.webhook_url = st.secrets.get("N8N_WEBHOOK_URL") or os.getenv("N8N_WEBHOOK_URL")
 
     def send_message_to_n8n(self, message, user_id=None):
         """Envia mensagem para o webhook do n8n"""
@@ -103,7 +104,7 @@ def main():
 
     # Verificar se webhook está configurado
     if not st.session_state.chatbot.webhook_url:
-        st.error("⚠️ Webhook não configurado! Configure N8N_WEBHOOK_URL no arquivo .env")
+        st.error("⚠️ Webhook não configurado! Configure N8N_WEBHOOK_URL nas secrets do Streamlit Cloud ou no arquivo .env para desenvolvimento local")
         st.stop()
 
     # Exibe mensagens do histórico
